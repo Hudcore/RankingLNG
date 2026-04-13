@@ -21,7 +21,7 @@ body{font-family:Arial,sans-serif;background:#f4f6f8;margin:0;color:#1f2937}head
 <label>Agilidade (0-10)</label><input type='number' min='0' max='10' id='n4'>
 <label>Comprometimento (0-10)</label><input type='number' min='0' max='10' id='n5'>
 <button onclick='enviar()'>Enviar voto</button>
-<p class='small'>Configure o endpoint do Google Apps Script na variável SCRIPT_URL.</p>
+
 <div id='msg'></div>
 </div>
 <div id='loginPage' class='card hidden'>
@@ -46,29 +46,5 @@ async function enviar(){const data={setor:setorSel.value,nome:nomeSel.value,n1:+
 function login(){if(document.getElementById('senha').value==='RHlong99!!'){loginPage.classList.add('hidden');rankPage.classList.remove('hidden');carregarRanking();} else loginMsg.innerHTML='Senha inválida';}
 async function carregarRanking(){const r=await fetch(SCRIPT_URL+'?ranking=1'); const dados=await r.json(); tbody.innerHTML=''; dados.forEach((x,i)=>{tbody.innerHTML+=`<tr><td>${i+1}</td><td>${x.nome}</td><td>${x.setor}</td><td>${Number(x.media).toFixed(2)}</td></tr>`})}
 </script>
-<!--
-CONFIGURAÇÃO 100% PRONTA
-1) Crie uma planilha Google chamada Premiacao
-2) Extensões > Apps Script
-3) Cole o script abaixo e publique como Aplicativo da Web (Qualquer pessoa)
 
-function doPost(e){
- const sh=SpreadsheetApp.getActive().getSheetByName('Dados') || SpreadsheetApp.getActive().insertSheet('Dados');
- if(sh.getLastRow()==0) sh.appendRow(['Data','Setor','Nome','N1','N2','N3','N4','N5','Media']);
- const d=JSON.parse(e.postData.contents);
- sh.appendRow([new Date(),d.setor,d.nome,d.n1,d.n2,d.n3,d.n4,d.n5,d.media]);
- return ContentService.createTextOutput(JSON.stringify({ok:true})).setMimeType(ContentService.MimeType.JSON);
-}
-function doGet(e){
- const sh=SpreadsheetApp.getActive().getSheetByName('Dados');
- const vals=sh.getDataRange().getValues().slice(1);
- const mapa={};
- vals.forEach(r=>{const k=r[2]+'|'+r[1]; if(!mapa[k]) mapa[k]={nome:r[2],setor:r[1],soma:0,qtd:0}; mapa[k].soma+=Number(r[8]); mapa[k].qtd++;});
- const arr=Object.values(mapa).map(x=>({nome:x.nome,setor:x.setor,media:x.soma/x.qtd})).sort((a,b)=>b.media-a.media);
- return ContentService.createTextOutput(JSON.stringify(arr)).setMimeType(ContentService.MimeType.JSON);
-}
-
-4) Copie a URL e substitua SEU_SCRIPT_ID acima.
-5) Suba este arquivo como index.html no GitHub Pages.
--->
 </body></html>
